@@ -2,16 +2,17 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import asyncpg
 import os
-from app.db.connection import DATABASE_URL
+from app.db.connection import db
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Create DB pool
-    app.state.db_pool = await asyncpg.create_pool(DATABASE_URL)
+    await db.connect()
     print("Connected to DB")
+    app.state.db = db
     yield
     # Shutdown: Close DB pool
-    await app.state.db_pool.close()
+    await db.disconnect()
     print("Closed DB connection")
 
 # Attach the lifespan context manager to the app
