@@ -21,8 +21,8 @@ const Login = () => {
     console.log("Submitted");
   };
   return (
-    <Container maxWidth="sm" sx={{ borderRadius: 4 }}>
-      <Paper elevation={5} sx={{ padding: 4, marginTop: 8 }}>
+    <Container maxWidth="sm">
+      <Paper elevation={5} sx={{ padding: 4, marginTop: 8, borderRadius: 8 }}>
         <Avatar sx={{ mx: "auto", mb: 2, bgcolor: "secondary.main" }} />
         <Typography
           component={"h1"}
@@ -60,10 +60,10 @@ const Login = () => {
             Log In
           </Button>
           <Typography color="secondary" mt={1}>
-            <Link>Forgot Password? </Link>
+            <Link href="/reset-password">Forgot Password? </Link>
           </Typography>
           <Typography color="secondary" align="center" mt={2}>
-            Don't have an account ? <Link>Sign UP</Link>
+            Don't have an account ? <Link href="/signup">Sign UP</Link>
           </Typography>
         </form>
 
