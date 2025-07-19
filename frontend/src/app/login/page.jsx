@@ -11,14 +11,31 @@ import {
   Link,
   Avatar,
 } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
-  const handleLogin = () => {
-    console.log("Submitted");
+  const handleLogin = async (email, password) => {
+    try {
+      const responce = await axios.post(
+        "http://localhost:8000/api/auth/signin",
+        { email, password }
+      );
+      router.push("/");
+    } catch (e) {
+      setMessage(e.response.data.detail);
+      console.error("Login Failed", e.response.data.detail);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await handleLogin(email, password);
   };
   return (
     <Container maxWidth="sm">
@@ -31,7 +48,7 @@ const Login = () => {
         >
           Sign In
         </Typography>
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmit}>
           <Box mb={2}>
             <TextField
               label="Email"
@@ -59,6 +76,11 @@ const Login = () => {
           <Button variant="contained" color="primary" fullWidth type="submit">
             Log In
           </Button>
+          {message && (
+            <Typography color="error" align="center" mt={2}>
+              {message}
+            </Typography>
+          )}
           <Typography color="secondary" mt={1}>
             <Link href="/reset-password">Forgot Password? </Link>
           </Typography>
@@ -66,12 +88,6 @@ const Login = () => {
             Don't have an account ? <Link href="/signup">Sign UP</Link>
           </Typography>
         </form>
-
-        {message && (
-          <Typography color="secondary" mt={2}>
-            {message}
-          </Typography>
-        )}
       </Paper>
     </Container>
   );
