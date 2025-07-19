@@ -10,6 +10,8 @@ import {
   Link,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -17,9 +19,30 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
-  const handleSignup = () => {
-    console.log("Submitted");
+  const handleSignup = async (name_, email_, password_) => {
+    try {
+      const responce = await axios.post(
+        "http://localhost:8000/api/auth/signup",
+        { name, email, password }
+      );
+      router.push("/login");
+    } catch (e) {
+      setMessage(e.response.data.detail);
+      console.error("Login Failed", e.response.data.detail);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password.length < 6) {
+      setMessage("too short password");
+    } else if (password != confirmPassword) {
+      setMessage("passwords do not match");
+    } else {
+      await handleSignup(name, email, password);
+    }
   };
 
   return (
@@ -38,7 +61,7 @@ const Signup = () => {
           <Typography component="h1" variant="h5" align="center" mb={2}>
             Create Account
           </Typography>
-          <form onSubmit={handleSignup}>
+          <form onSubmit={handleSubmit}>
             <Box mb={2}>
               <TextField
                 label="Full Name"
@@ -85,16 +108,15 @@ const Signup = () => {
             <Button variant="contained" color="primary" fullWidth type="submit">
               Sign Up
             </Button>
+            {message && (
+              <Typography color="error" mt={2} textAlign="center">
+                {message}
+              </Typography>
+            )}
 
             <Typography align="center" mt={2}>
               Already have an account? <Link href="/login">Log In</Link>
             </Typography>
-
-            {message && (
-              <Typography color="secondary" mt={2} textAlign="center">
-                {message}
-              </Typography>
-            )}
           </form>
         </Paper>
       </Container>
