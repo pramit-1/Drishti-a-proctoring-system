@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-import asyncpg
-import os
 from app.db.connection import db
 from app.api.routes import auth
+from fastapi.middleware.cors import CORSMiddleware
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,6 +19,21 @@ async def lifespan(app: FastAPI):
 
 # Attach the lifespan context manager to the app
 app = FastAPI(lifespan=lifespan)
+
+#setting up cors
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,            
+    allow_credentials=True,
+    allow_methods=["*"],              
+    allow_headers=["*"],           
+)
 
 # from app.api.routes import auth
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
