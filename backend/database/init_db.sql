@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS exams (
 
 CREATE TABLE IF NOT EXISTS questions (
     question_id SERIAL PRIMARY KEY,
-    exam_id INT REFERENCES exams(exam_id)
+    exam_id INT REFERENCES exams(exam_id),
     question TEXT,
     optionA VARCHAR(255),
     optionB VARCHAR(255),

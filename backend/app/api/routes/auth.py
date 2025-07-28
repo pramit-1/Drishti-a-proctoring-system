@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from asyncpg import PostgresError
 from app.db.connection import db
 from app.utils.hash import hash_password, verify_password
+from backend.app.utils.jwt import create_access_token
 from pydantic import BaseModel,EmailStr
 
 router = APIRouter()
@@ -64,11 +65,15 @@ async def signin(payload:SigninData):
     
     #matching the password
     hashed_password = user["password"]
-    if verify_password(hashed_password, payload.password):
-        return {"message":"successfully logged in"}
-    else:
+    if not verify_password(hashed_password, payload.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid Pssword"
         )
+    
+    token = create_access_token({"user_id":user["attendee_id"], "email":user["email"] })
+    return {
+        "access_token":token,
+        "token_type":"bearer"
+    }
 
