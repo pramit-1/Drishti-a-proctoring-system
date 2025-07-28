@@ -5,7 +5,7 @@ from app.utils.hash import hash_password, verify_password
 from backend.app.utils.jwt import create_access_token
 from pydantic import BaseModel,EmailStr
 
-router = APIRouter()
+auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 class SignupData(BaseModel):
     name:str
@@ -16,7 +16,7 @@ class SigninData(BaseModel):
     email: EmailStr
     password:str
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED)
+@auth_router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup(payload:SignupData):
     # checking if email already exists
     user = await db.fetchrow("SELECT attendee_id FROM attendee WHERE email = $1",payload.email)
@@ -52,7 +52,7 @@ payload.name, payload.email, hashed_psss
             detail="Database Error"
         )
     
-@router.post("/signin", status_code=status.HTTP_202_ACCEPTED)
+@auth_router.post("/signin", status_code=status.HTTP_202_ACCEPTED)
 async def signin(payload:SigninData):
     # checking is user exists
     user = await db.fetchrow("SELECT * FROM attendee WHERE email = $1",payload.email)

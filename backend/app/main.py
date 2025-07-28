@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.db.connection import db
-from app.api.routes import auth
+from backend.app.api.router import api_router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -36,7 +36,7 @@ app.add_middleware(
 )
 
 # from app.api.routes import auth
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(api_router)
 
 @app.get("/")
 async def home():
