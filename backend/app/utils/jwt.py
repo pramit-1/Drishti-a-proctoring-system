@@ -1,4 +1,4 @@
-from jose import jwt, JWTError
+from jose import jwt, JWTError, ExpiredSignatureError
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import os
@@ -15,9 +15,11 @@ def create_access_token(data:dict, expire_delta:timedelta = None):
     to_encode.update({"exp":expire})
     return jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
 
-def verify_access_token(token:str):
+def verify_access_token(token: str):
     try:
-        payload = jwt.decode(token,SECRET_KEY)
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])  # Fix: include 'algorithms'
         return payload
+    except ExpiredSignatureError:
+        return None  # Token is expired
     except JWTError:
-        return None
+        return None  # Invalid token

@@ -11,15 +11,23 @@ class SignupData(BaseModel):
     name:str
     email:EmailStr
     password:str
+    role:str
 
 class SigninData(BaseModel):
     email: EmailStr
     password:str
+    role:str
 
 @auth_router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def signup(payload:SignupData):
+    user_type = payload.role.lower()
+    if user_type not in ['attendee', 'proctor']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid role"
+        )
     # checking if email already exists
-    user = await db.fetchrow("SELECT attendee_id FROM attendee WHERE email = $1",payload.email)
+    user = await db.fetchrow(f"SELECT {user_type}_id FROM {user_type} WHERE email = $1",payload.email)
 
     if user:
         raise HTTPException(
@@ -39,8 +47,8 @@ async def signup(payload:SignupData):
     #Insert into database
     try:
         await db.execute(
-            """
-    INSERT INTO attendee(name, email, password)
+            f"""
+    INSERT INTO {user_type}(name, email, password)
     VALUES ($1,$2,$3)
 """,
 payload.name, payload.email, hashed_psss
@@ -54,8 +62,14 @@ payload.name, payload.email, hashed_psss
     
 @auth_router.post("/signin", status_code=status.HTTP_202_ACCEPTED)
 async def signin(payload:SigninData):
+    user_type = payload.role.lower()
+    if user_type not in ['attendee', 'proctor']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid role"
+        )
     # checking is user exists
-    user = await db.fetchrow("SELECT * FROM attendee WHERE email = $1",payload.email)
+    user = await db.fetchrow(f"SELECT * FROM {user_type} WHERE email = $1",payload.email)   
     print(user)
     if not user:
         raise HTTPException(
@@ -71,7 +85,7 @@ async def signin(payload:SigninData):
             detail="Invalid Pssword"
         )
     
-    token = create_access_token({"user_id":user["attendee_id"], "email":user["email"] })
+    token = create_access_token({"user_id":user["attendee_id"], "email":user["email"], "role":user_type })
     return {
         "access_token":token,
         "token_type":"bearer"
