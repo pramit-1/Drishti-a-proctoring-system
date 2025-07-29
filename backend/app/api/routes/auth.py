@@ -70,7 +70,7 @@ async def signin(payload:SigninData):
         )
     # checking is user exists
     user = await db.fetchrow(f"SELECT * FROM {user_type} WHERE email = $1",payload.email)   
-    print(user)
+    print(dict(user))
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
