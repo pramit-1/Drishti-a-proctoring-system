@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from asyncpg import PostgresError
 from app.db.connection import db
 from app.utils.hash import hash_password, verify_password
-from backend.app.utils.jwt import create_access_token
+from app.utils.jwt import create_access_token
 from pydantic import BaseModel,EmailStr
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
