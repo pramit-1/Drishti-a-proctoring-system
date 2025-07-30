@@ -3,14 +3,17 @@ from asyncpg import PostgresError
 from app.db.connection import db
 from pydantic import BaseModel
 from app.dependency.auth_dependency import get_current_user
+from app.api.routes.questions import questions_router
 
 exam_router = APIRouter(prefix="/exam")
+exam_router.include_router(questions_router)
 
 class ExamData(BaseModel):
     title:str
     subject:str
     duration:int
     access_token:str
+
 
 @exam_router.post("/create")
 async def create_exam(payload:ExamData, user = Depends(get_current_user)):

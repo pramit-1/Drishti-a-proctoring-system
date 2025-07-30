@@ -85,7 +85,7 @@ async def signin(payload:SigninData):
             detail="Invalid Pssword"
         )
     
-    token = create_access_token({"user_id":user["attendee_id"], "email":user["email"], "role":user_type })
+    token = create_access_token({"user_id":user[f"{user_type}_id"], "email":user["email"], "role":user_type })
     return {
         "access_token":token,
         "token_type":"bearer"
