@@ -60,7 +60,7 @@ const Login = () => {
           color="primary"
           sx={{ fontWeight: "bold", mb: 1 }}
         >
-          Welcome to DRISTHI
+          Welcome to DRISTHI:Proctroing System
         </Typography>
         <Typography
           variant="body1"
