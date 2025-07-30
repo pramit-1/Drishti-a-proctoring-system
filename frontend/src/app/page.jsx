@@ -1,7 +1,9 @@
+"use client";
 import React from "react";
+import DashboardNextJS from "../components/DashboardNextJS";
 
-const page = () => {
-  return <div>page</div>;
+const Page = () => {
+  return <DashboardNextJS />;
 };
 
-export default page;
+export default Page;
