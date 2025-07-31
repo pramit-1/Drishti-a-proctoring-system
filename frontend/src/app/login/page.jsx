@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Link,
 } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ const Login = () => {
   const [role, setRole] = useState("attendee");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,8 +73,8 @@ const Login = () => {
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ mb: 4, whiteSpace: 'pre-line' }}
->
+          sx={{ mb: 4, whiteSpace: "pre-line" }}
+        >
           {`Your smart proctoring and exam management solution.
             Log in to access your dashboard and manage exams.`}
         </Typography>
