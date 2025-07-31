@@ -22,8 +22,12 @@ const Login = () => {
     e.preventDefault();
     // Simulate login attempt with email, password and role
     console.log("Logging in with:", { email, password, role });
-    // Navigate or handle login response here
-    window.location.href = "/dashboard"; // Or your login processing route
+    // Redirect to role-specific dashboard
+    if (role === "proctor") {
+      window.location.href = "/dashboardProctor";
+    } else {
+      window.location.href = "/dashboardAttendee";
+    }
   };
 
   const handleSignUpClick = () => {
