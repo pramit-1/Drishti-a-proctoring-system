@@ -13,18 +13,119 @@ import {
   CardContent,
 } from "@mui/material";
 
-const Dashboard = () => {
+const Dashboard = ({ role = "attendee" }) => {
   const handleNavigate = (path) => {
     window.location.href = path;
   };
 
-  // Example dashboard data — replace with your actual data source or props
-  const dashboardStats = [
+  // Capitalize first letter safely
+  const displayRole = role.charAt(0).toUpperCase() + role.slice(1);
+
+  // Define dashboard data based on role
+  const proctorStats = [
     { title: "Scheduled Exams", value: 5 },
-    { title: "Exams Taken Today", value: 12 },
     { title: "Pending Approvals", value: 3 },
     { title: "Active Proctors", value: 7 },
+    { title: "Issues Reported", value: 2 },
   ];
+
+  const attendeeStats = [
+    { title: "Upcoming Exams", value: 3 },
+    { title: "Exams Taken Today", value: 12 },
+    { title: "Passed Exams", value: 25 },
+    { title: "Failed Exams", value: 2 },
+  ];
+
+  // Choose stats and buttons based on role
+  const dashboardStats = role === "proctor" ? proctorStats : attendeeStats;
+
+  // Shared button styles for consistency
+  const buttonStyles = {
+    px: { xs: 3, sm: 5 },
+    py: { xs: 1.5, sm: 2 },
+    fontWeight: "bold",
+    fontSize: { xs: "0.9rem", sm: "1.1rem" },
+    boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+    borderRadius: 3,
+    transition: "transform 0.2s, box-shadow 0.2s",
+    "&:hover": {
+      transform: "scale(1.07)",
+      boxShadow: "0 8px 40px rgba(0,0,0,0.3)",
+    },
+    "&:focus-visible": {
+      outline: "3px solid",
+      outlineOffset: "2px",
+    },
+  };
+
+  // Define different buttons/actions per role
+  const proctorActions = (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        gap: 4,
+        flexWrap: "wrap",
+      }}
+    >
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          ...buttonStyles,
+          "&:focus-visible": { outlineColor: "#3f51b5" },
+        }}
+        onClick={() => handleNavigate("/manage-exam")}
+      >
+        🗂 Manage Exams
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{
+          ...buttonStyles,
+          "&:focus-visible": { outlineColor: "#f50057" },
+        }}
+        onClick={() => handleNavigate("/review-approvals")}
+      >
+        ✅ Review Approvals
+      </Button>
+    </Box>
+  );
+
+  const attendeeActions = (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        gap: 4,
+        flexWrap: "wrap",
+      }}
+    >
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          ...buttonStyles,
+          "&:focus-visible": { outlineColor: "#3f51b5" },
+        }}
+        onClick={() => handleNavigate("/exam")}
+      >
+        📝 Take Exam
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        sx={{
+          ...buttonStyles,
+          "&:focus-visible": { outlineColor: "#f50057" },
+        }}
+        onClick={() => handleNavigate("/exam-history")}
+      >
+        📜 Exam History
+      </Button>
+    </Box>
+  );
 
   return (
     <Box
@@ -42,7 +143,9 @@ const Dashboard = () => {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             DRISTHI Proctoring Dashboard
           </Typography>
-          {/* You could add navigation buttons or user menu here */}
+          <Typography sx={{ ml: 2, fontWeight: 500, fontStyle: "italic" }}>
+            Role: {displayRole}
+          </Typography>
         </Toolbar>
       </AppBar>
 
@@ -82,63 +185,7 @@ const Dashboard = () => {
           <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
             Your smart proctoring and exam management dashboard
           </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              gap: 4,
-              flexWrap: "wrap",
-            }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{
-                px: { xs: 3, sm: 5 },
-                py: { xs: 1.5, sm: 2 },
-                fontWeight: "bold",
-                fontSize: { xs: "0.9rem", sm: "1.1rem" },
-                boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-                borderRadius: 3,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  transform: "scale(1.07)",
-                  boxShadow: "0 8px 40px rgba(0,0,0,0.3)",
-                },
-                "&:focus-visible": {
-                  outline: "3px solid #3f51b5",
-                  outlineOffset: "2px",
-                },
-              }}
-              onClick={() => handleNavigate("/manage-exam")}
-            >
-              🗂 Manage Exams
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{
-                px: { xs: 3, sm: 5 },
-                py: { xs: 1.5, sm: 2 },
-                fontWeight: "bold",
-                fontSize: { xs: "0.9rem", sm: "1.1rem" },
-                boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
-                borderRadius: 3,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  transform: "scale(1.07)",
-                  boxShadow: "0 8px 40px rgba(0,0,0,0.3)",
-                },
-                "&:focus-visible": {
-                  outline: "3px solid #f50057",
-                  outlineOffset: "2px",
-                },
-              }}
-              onClick={() => handleNavigate("/exam")}
-            >
-              📝 Take Exam
-            </Button>
-          </Box>
+          {role === "proctor" ? proctorActions : attendeeActions}
         </Paper>
 
         {/* Stats Grid */}
@@ -212,9 +259,7 @@ const Dashboard = () => {
           color: "rgba(255,255,255,0.8)",
         }}
       >
-        <Typography variant="body2">
-          © 2025 DRISTHI. All rights reserved.
-        </Typography>
+        <Typography variant="body2">© 2025 DRISTHI. All rights reserved.</Typography>
       </Box>
     </Box>
   );
