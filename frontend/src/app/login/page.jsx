@@ -12,6 +12,8 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [role, setRole] = useState("attendee");
@@ -74,7 +76,6 @@ const Login = () => {
           {`Your smart proctoring and exam management solution.
             Log in to access your dashboard and manage exams.`}
         </Typography>
-
 
         <form onSubmit={handleSubmit} noValidate>
           <FormControl component="fieldset" sx={{ mb: 3, textAlign: "left" }}>
@@ -147,27 +148,18 @@ const Login = () => {
           >
             Login
           </Button>
+          {message && (
+            <Typography color="error" align="center" mt={2}>
+              {message}
+            </Typography>
+          )}
+          <Typography color="secondary" mt={1}>
+            <Link href="/reset-password">Forgot Password? </Link>
+          </Typography>
+          <Typography color="secondary" align="center" mt={2}>
+            Don't have an account ? <Link href="/signup">Sign UP</Link>
+          </Typography>
         </form>
-
-        <Button
-          variant="outlined"
-          color="secondary"
-          fullWidth
-          sx={{
-            mt: 3,
-            py: 1.6,
-            fontWeight: "bold",
-            fontSize: "1.1rem",
-            borderWidth: 2,
-            "&:hover": {
-              borderWidth: 2,
-              backgroundColor: "rgba(118,75,162,0.1)",
-            },
-          }}
-          onClick={handleSignUpClick}
-        >
-          Sign Up
-        </Button>
       </Paper>
     </Box>
   );
