@@ -10,9 +10,15 @@ import {
   Button,
   Link,
   Alert,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 
 const Signup = () => {
+    const [role, setRole] = useState("attendee"); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -126,6 +132,7 @@ const Signup = () => {
               />
             </Box>
 
+
             <Box mb={3}>
               <TextField
                 label="Confirm Password"
@@ -140,6 +147,33 @@ const Signup = () => {
               />
             </Box>
 
+            {/* Role selection radio buttons */}
+            <FormControl component="fieldset" sx={{ mb: 3, textAlign: "left" }}>
+              <FormLabel component="legend" sx={{ mb: 1, fontWeight: "600" }}>
+                Sign up as:
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-label="role"
+                name="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <FormControlLabel
+                  value="proctor"
+                  control={<Radio color="primary" />}
+                  label="Proctor"
+                  disabled={isSubmitting}
+                />
+                <FormControlLabel
+                  value="attendee"
+                  control={<Radio color="primary" />}
+                  label="Attendee"
+                  disabled={isSubmitting}
+                />
+              </RadioGroup>
+            </FormControl>
+            
             <Button
               variant="contained"
               color="primary"
