@@ -41,4 +41,24 @@ async def create_exam(payload:ExamData, user = Depends(get_current_user)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error during exam creation"
         )
+@exam_router.get("/view-proctor")
+async def view_exams_proctor(user = Depends(get_current_user)):
+    if user["role"] != 'proctor':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only proctors can view exams"
+        )
 
+    try:
+        exams = await db.fetch(
+            "SELECT exam_id, title, subject, duration, date FROM exams WHERE proctor_id = $1",
+            user["user_id"]
+        )
+        return {"proctor_id": user["user_id"], "exams": exams}
+    except PostgresError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching exams"
+        )
+
+    pass

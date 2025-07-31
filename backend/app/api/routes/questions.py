@@ -82,3 +82,12 @@ async def get_all_questions(exam_id:int = Query(...), user = Depends(get_current
     )
 
     return {"exam_id": exam_id, "questions": questions}
+
+@questions_router.get("/view-all-attendee")
+async def get_all_questions_attendee(session_id:int = Query(...), user=Depends(get_current_user)):
+    if user["role"] != "attendee":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only attendee can take exam"
+        ) 
+    pass
