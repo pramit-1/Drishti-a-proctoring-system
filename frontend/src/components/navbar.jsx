@@ -17,6 +17,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "@/context/authContext";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -25,6 +26,7 @@ const Navbar = () => {
 
   const { auth, setAuth } = useAuth();
   const token = auth?.token;
+  const router = useRouter();
 
   const isTokenValid = () => {
     if (!token) return false;
@@ -41,6 +43,7 @@ const Navbar = () => {
 
   useEffect(() => {
     if (isLoggedIn) {
+      console.log(auth.role);
       setIsProctor(auth.role === "proctor");
     }
   }, [auth]);
@@ -77,7 +80,13 @@ const Navbar = () => {
             {item.text}
           </Button>
         ) : (
-          <Button key={idx} color="inherit" href={item.href}>
+          <Button
+            key={idx}
+            color="inherit"
+            onClick={() => {
+              router.push(item.href);
+            }}
+          >
             {item.text}
           </Button>
         )
