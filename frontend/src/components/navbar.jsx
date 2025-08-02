@@ -1,4 +1,3 @@
-// Navbar.jsx
 "use client";
 import React, { useState, useEffect } from "react";
 import {
@@ -17,44 +16,54 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { jwtDecode } from "jwt-decode";
-
-const checkToken = () => {
-  const token = localStorage.getItem("access_token");
-  console.log(token);
-  if (!token) return false;
-
-  try {
-    const decoded = jwtDecode(token);
-    const now = Date.now() / 1000;
-    return decoded.exp > now;
-  } catch {
-    return false;
-  }
-};
+import { useAuth } from "@/context/authContext";
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isProctor, setIsProctor] = useState(false);
   const isMobile = useMediaQuery("(max-width:768px)");
 
+  const { auth, setAuth } = useAuth();
+  const token = auth?.token;
+
+  const isTokenValid = () => {
+    if (!token) return false;
+    try {
+      const decoded = jwtDecode(token);
+      const now = Date.now() / 1000;
+      return decoded.exp > now;
+    } catch {
+      return false;
+    }
+  };
+
+  const isLoggedIn = isTokenValid();
+
   useEffect(() => {
-    setIsLoggedIn(checkToken());
-  }, []);
-  console.log(isLoggedIn);
+    if (isLoggedIn) {
+      setIsProctor(auth.role === "proctor");
+    }
+  }, [auth]);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
-    setIsLoggedIn(false);
-    window.location.reload(); // optional: re-route
+    localStorage.removeItem("role");
+    setAuth({ token: null, role: null });
   };
 
   const navItems = isLoggedIn
-    ? [
-        { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
-        { text: "Exams", href: "/exams" },
-        { text: "Results", href: "/results" },
-        { text: "Create Exam", href: "/create-exam" },
-      ]
+    ? isProctor
+      ? [
+          { text: "Create Exam", href: "/create-exam" },
+          { text: "Exams", href: "/exams" },
+          { text: "Results", href: "/results" },
+          { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
+        ]
+      : [
+          { text: "Exams", href: "/exams" },
+          { text: "Results", href: "/results" },
+          { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
+        ]
     : [
         { text: "Login", href: "/login" },
         { text: "Signup", href: "/signup" },
@@ -106,13 +115,11 @@ const Navbar = () => {
     <>
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          {/* Left: Logo + Name */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <img src="/logo.png" alt="Logo" style={{ width: 30, height: 30 }} />
             <Typography variant="h6">ExamProctor</Typography>
           </Box>
 
-          {/* Right: Actions */}
           {isMobile ? (
             <>
               <IconButton color="inherit" onClick={() => setDrawerOpen(true)}>

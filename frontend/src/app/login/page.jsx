@@ -15,28 +15,41 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/authContext";
 
 const Login = () => {
   const [role, setRole] = useState("attendee");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
-  const handleSubmit = (e) => {
+  const router = useRouter();
+  const { setAuth } = useAuth();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate login attempt with email, password and role
-    console.log("Logging in with:", { email, password, role });
-    // Redirect to role-specific dashboard
-    if (role === "proctor") {
-      window.location.href = "/dashboardProctor";
-    } else {
-      window.location.href = "/dashboardAttendee";
-    }
-  };
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/signin",
+        {
+          email,
+          password,
+          role,
+        }
+      );
+      console.log(response);
+      const { access_token, token_type } = response.data;
 
-  const handleSignUpClick = () => {
-    // Navigate to your sign up page
-    window.location.href = "/signup"; // Change to your actual signup route
+      // Store the token and role
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("userRole", role);
+      setAuth({ token: access_token, role: role });
+      router.push("/");
+    } catch (error) {
+      const message =
+        error.response?.data?.detail || "Login failed. Try again.";
+      // alert(message);
+      // console.error("Login error:", message);
+      setMessage(message);
+    }
   };
 
   return (
