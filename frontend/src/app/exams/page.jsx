@@ -12,10 +12,12 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
+import CreateExamModal from "@/components/create_exam";
 
 const ExamsPage = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openCreateExam, setOpenCreateExam] = useState(false);
 
   const fetchExams = async () => {
     try {
@@ -42,6 +44,10 @@ const ExamsPage = () => {
 
   return (
     <>
+      <CreateExamModal
+        open={openCreateExam}
+        onClose={() => setOpenCreateExam(false)}
+      />
       <Container sx={{ mt: 4 }}>
         <Box
           display="flex"
@@ -53,7 +59,7 @@ const ExamsPage = () => {
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => (window.location.href = "/create-exam")}
+            onClick={() => setOpenCreateExam(true)}
           >
             Create Exam
           </Button>

@@ -18,10 +18,13 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "next/navigation";
+import CreateExamModal from "@/components/create_exam";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isProctor, setIsProctor] = useState(false);
+  const [openExamModal, setOpenExamModal] = useState(false);
+
   const isMobile = useMediaQuery("(max-width:768px)");
 
   const { auth, setAuth } = useAuth();
@@ -57,7 +60,7 @@ const Navbar = () => {
   const navItems = isLoggedIn
     ? isProctor
       ? [
-          { text: "Create Exam", href: "/create-exam" },
+          { text: "Create Exam", action: () => setOpenExamModal(true) },
           { text: "Exams", href: "/exams" },
           { text: "Results", href: "/results" },
           { text: "Logout", action: handleLogout, icon: <LogoutIcon /> },
@@ -108,7 +111,7 @@ const Navbar = () => {
               key={idx}
               onClick={() => {
                 if (item.action) item.action();
-                else window.location.href = item.href;
+                else router.push(item.href);
                 setDrawerOpen(false);
               }}
             >
@@ -141,6 +144,10 @@ const Navbar = () => {
           )}
         </Toolbar>
       </AppBar>
+      <CreateExamModal
+        open={openExamModal}
+        onClose={() => setOpenExamModal(false)}
+      />
     </>
   );
 };
