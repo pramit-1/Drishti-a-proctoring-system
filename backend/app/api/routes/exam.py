@@ -4,6 +4,7 @@ from app.db.connection import db
 from pydantic import BaseModel
 from app.dependency.auth_dependency import get_current_user
 from app.api.routes.questions import questions_router
+from datetime import date
 
 exam_router = APIRouter(prefix="/exam")
 exam_router.include_router(questions_router)
@@ -12,7 +13,7 @@ class ExamData(BaseModel):
     title:str
     subject:str
     duration:int
-    access_token:str
+    date:date
 
 
 @exam_router.post("/create")
@@ -31,22 +32,23 @@ async def create_exam(payload:ExamData, user = Depends(get_current_user)):
             """,
             payload.title,
             payload.subject,
-            payload.duration,
+            int(payload.duration),
             payload.date,
             user["user_id"]
         )
         return {"message": "Exam created successfully"}
-    except PostgresError:
+    except PostgresError as e:
+        print(str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database error during exam creation"
+            detail="Database error during exam creation",
         )
 @exam_router.get("/view-proctor")
 async def view_exams_proctor(user = Depends(get_current_user)):
     if user["role"] != 'proctor':
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only proctors can view exams"
+            detail="OnlPostgresErrory proctors can view exams"
         )
 
     try:

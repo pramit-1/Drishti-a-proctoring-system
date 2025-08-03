@@ -15,22 +15,36 @@ import axios from "axios";
 const CreateExamModal = ({ open, onClose, onCreated }) => {
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("");
-  const [duration, setDuration] = useState("");
+  const [duration, setDuration] = useState();
   const [date, setDate] = useState("");
 
   const handleSubmit = async () => {
-    // try {
-    //   const res = await axios.post("http://localhost:8000/api/exams", {
-    //     title,
-    //     subject,
-    //     duration,
-    //     date,
-    //   });
-    //   if (onCreated) onCreated(res.data);
-    //   onClose(); // close modal
-    // } catch (err) {
-    //   console.error("Failed to create exam:", err);
-    // }
+    if (!title || !subject || !date || !duration || isNaN(duration)) {
+      alert("Please fill all fields correctly");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("access_token");
+
+      const res = await axios.post(
+        "http://localhost:8000/api/exam/create",
+        {
+          title,
+          subject,
+          duration: parseInt(duration),
+          date,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (onCreated) onCreated(res.data);
+      onClose(); // close modal
+    } catch (err) {
+      console.error("Failed to create exam:", err);
+    }
   };
 
   return (
@@ -71,7 +85,10 @@ const CreateExamModal = ({ open, onClose, onCreated }) => {
           <TextField
             label="Duration (in minutes)"
             value={duration}
-            onChange={(e) => setDuration(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value;
+              setDuration(value === "" ? "" : parseInt(value));
+            }}
             type="number"
             fullWidth
             required
@@ -81,7 +98,7 @@ const CreateExamModal = ({ open, onClose, onCreated }) => {
             label="Date"
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => setDate(String(e.target.value))}
             InputLabelProps={{ shrink: true }}
             fullWidth
             required
