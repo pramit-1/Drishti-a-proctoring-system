@@ -43,12 +43,25 @@ const Signup = () => {
       setMessageType("error");
       return;
     }
+      // Check if user already exists (by email)
+    const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    if (existingUsers.find((user) => user.email === email)) {
+      setMessage("An account with this email already exists.");
+      setMessageType("error");
+      return;
+    }
 
     setIsSubmitting(true);
 
     // Simulate async signup API call
     setTimeout(() => {
-      console.log("User signed up with:", { name, email });
+       // Save new user to localStorage
+      const newUser = { name, email, password, role };
+      localStorage.setItem(
+        "users",
+        JSON.stringify([...existingUsers, newUser])
+      );
+      
       setIsSubmitting(false);
       setMessage("Signup successful! You can now log in.");
       setMessageType("success");

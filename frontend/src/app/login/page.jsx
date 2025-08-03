@@ -11,19 +11,38 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Alert,
 } from "@mui/material";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 
 const Login = () => {
   const [role, setRole] = useState("attendee");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simulate login attempt with email, password and role
-    console.log("Logging in with:", { email, password, role });
+    setErrorMessage("");
+
+    // Fetch saved users from localStorage
+    const savedUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    // Check if user exists with matching email, password and role
+    const foundUser = savedUsers.find(
+      (user) =>
+        user.email === email &&
+        user.password === password &&
+        user.role === role
+    );
+
+    if (!foundUser) {
+      setErrorMessage("Invalid credentials or user not registered.");
+      return;
+    }
+
+    // Successful login: Save role (and email if needed) and redirect accordingly
+    localStorage.setItem("userRole", role);
+    localStorage.setItem("userEmail", email);
+
     // Redirect to role-specific dashboard
     if (role === "proctor") {
       window.location.href = "/dashboardProctor";
@@ -123,7 +142,12 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-
+           {errorMessage && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {errorMessage}
+            </Alert>
+          )}
+          
           <Button
             type="submit"
             variant="contained"
@@ -147,19 +171,28 @@ const Login = () => {
             }}
           >
             Login
-          </Button>
-          {message && (
-            <Typography color="error" align="center" mt={2}>
-              {message}
-            </Typography>
-          )}
-          <Typography color="secondary" mt={1}>
-            <Link href="/reset-password">Forgot Password? </Link>
-          </Typography>
-          <Typography color="secondary" align="center" mt={2}>
-            Don't have an account ? <Link href="/signup">Sign UP</Link>
-          </Typography>
+                   </Button>
         </form>
+
+        <Button
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          sx={{
+            mt: 3,
+            py: 1.6,
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            borderWidth: 2,
+            "&:hover": {
+              borderWidth: 2,
+              backgroundColor: "rgba(118,75,162,0.1)",
+            },
+          }}
+          onClick={handleSignUpClick}
+        >
+          Sign Up
+        </Button>
       </Paper>
     </Box>
   );
