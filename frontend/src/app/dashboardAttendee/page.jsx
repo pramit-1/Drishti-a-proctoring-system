@@ -90,7 +90,7 @@ const DashboardAttendee = () => {
               variant="contained"
               color="primary"
               sx={{ ...buttonStyles, "&:focus-visible": { outlineColor: "#3f51b5" } }}
-              onClick={() => handleNavigate("/exam")}
+              onClick={() => handleNavigate("/Examlist")}
             >
               📝 Take Exam
             </Button>
