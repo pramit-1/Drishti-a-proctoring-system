@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Card, CardContent, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const stickyColors = [
   "#FFFACD", // LemonChiffon
@@ -12,6 +13,7 @@ const stickyColors = [
 
 const ExamCard = ({ exams, onClick }) => {
   if (!exams || !Array.isArray(exams)) return null;
+  const router = useRouter();
   return (
     <Grid container spacing={3}>
       {exams.map((exam, index) => (
@@ -31,7 +33,7 @@ const ExamCard = ({ exams, onClick }) => {
               },
               fontFamily: `"Shadows Into Light", "Comic Sans MS", cursive`,
             }}
-            onClick={() => onClick && onClick(exam)}
+            onClick={() => router.push(`/exams/${exam.exam_id}`)}
           >
             <CardContent>
               <Typography variant="h6" gutterBottom>
