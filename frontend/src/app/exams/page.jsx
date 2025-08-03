@@ -13,6 +13,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import CreateExamModal from "@/components/create_exam";
+import ExamCard from "@/components/examCard";
 
 const ExamsPage = () => {
   const [exams, setExams] = useState([]);
@@ -75,32 +76,7 @@ const ExamsPage = () => {
             No exams available.
           </Typography>
         ) : (
-          <Grid container spacing={3}>
-            {exams.map((exam) => (
-              <Grid item xs={12} sm={6} md={4} key={exam.exam_id}>
-                <Card elevation={3}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {exam.title}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Subject:</strong> {exam.subject}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Duration:</strong> {exam.duration} mins
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Date:</strong>{" "}
-                      {new Date(exam.date).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>Status:</strong> {exam.status || "Scheduled"}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          <ExamCard exam={exams} />
         )}
       </Container>
     </>
