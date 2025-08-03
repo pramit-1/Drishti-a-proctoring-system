@@ -21,7 +21,7 @@ const ExamsPage = () => {
 
   const fetchExams = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("access_token");
       const res = await axios.get(
         "http://localhost:8000/api/exam/view-proctor",
         {
@@ -30,7 +30,8 @@ const ExamsPage = () => {
           },
         }
       );
-      setExams(res.data || []);
+      console.log(res);
+      setExams(res.data.exams || []);
     } catch (error) {
       console.error("Error fetching exams:", error);
     } finally {

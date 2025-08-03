@@ -4,7 +4,7 @@ from app.db.connection import db
 from pydantic import BaseModel
 from app.dependency.auth_dependency import get_current_user
 
-questions_router = APIRouter(prefix="questions")
+questions_router = APIRouter(prefix="/questions")
 
 class QuestionData(BaseModel):
     exam_id:int
