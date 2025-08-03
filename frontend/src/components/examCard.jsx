@@ -11,6 +11,7 @@ const stickyColors = [
 ];
 
 const ExamCard = ({ exams, onClick }) => {
+  if (!exams || !Array.isArray(exams)) return null;
   return (
     <Grid container spacing={3}>
       {exams.map((exam, index) => (

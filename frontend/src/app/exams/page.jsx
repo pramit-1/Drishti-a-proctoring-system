@@ -76,7 +76,7 @@ const ExamsPage = () => {
             No exams available.
           </Typography>
         ) : (
-          <ExamCard exam={exams} />
+          <ExamCard exams={exams} />
         )}
       </Container>
     </>
