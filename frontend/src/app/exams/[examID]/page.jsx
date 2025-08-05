@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import {
   Box,
   Button,
@@ -24,21 +25,46 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
+import axios from "axios";
+import AddQuestion from "@/components/addQuestion";
 
 const ExamManagement = () => {
-  const [examTitle, setExamTitle] = useState("Hello World");
-  const [subject, setSubject] = useState("subject");
-  const [duration, setDuration] = useState("25");
-  const [date, setDate] = useState("2025-10-10");
-  const [status, setStatus] = useState("upcoming");
-  const generateExamCode = (length = 6) => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let code = "";
-    for (let i = 0; i < length; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+  const [examTitle, setExamTitle] = useState("");
+  const [subject, setSubject] = useState("");
+  const [duration, setDuration] = useState("");
+  const [date, setDate] = useState("");
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const fetchExamData = async () => {
+    try {
+      const access_token = localStorage.getItem("access_token");
+      const res = await axios.get(
+        `http://localhost:8000/api/exam/view/${exam_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const exam = res.data;
+      setExamTitle(exam.title);
+      setSubject(exam.subject);
+      setDuration(exam.duration);
+      setDate(exam.date);
+      setStatus(exam.status);
+    } catch (err) {
+      console.error("Failed to fetch exam:", err);
+    } finally {
+      setLoading(false);
     }
-    return code;
   };
+
+  const params = useParams();
+  const exam_id = params?.examID;
+  useEffect(() => {
+    fetchExamData();
+  }, []);
 
   return (
     <>
@@ -48,7 +74,15 @@ const ExamManagement = () => {
           flexDirection: "column",
         }}
       >
-        {" "}
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          my={4}
+          textAlign="center"
+          color="primary"
+        >
+          {examTitle}
+        </Typography>
         <Box mb={5}>
           <Typography variant="h5" color="text.secondary" gutterBottom>
             {subject}
@@ -99,6 +133,8 @@ const ExamManagement = () => {
           </Grid>
         </Box>
       </Box>
+
+      <AddQuestion />
     </>
   );
 };
