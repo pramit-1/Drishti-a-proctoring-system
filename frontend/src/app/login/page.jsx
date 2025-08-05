@@ -11,6 +11,8 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+
+  Alert,
   Link,
 } from "@mui/material";
 import axios from "axios";
@@ -138,7 +140,12 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-
+           {errorMessage && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {errorMessage}
+            </Alert>
+          )}
+          
           <Button
             type="submit"
             variant="contained"
@@ -162,19 +169,28 @@ const Login = () => {
             }}
           >
             Login
-          </Button>
-          {message && (
-            <Typography color="error" align="center" mt={2}>
-              {message}
-            </Typography>
-          )}
-          <Typography color="secondary" mt={1}>
-            <Link href="/reset-password">Forgot Password? </Link>
-          </Typography>
-          <Typography color="secondary" align="center" mt={2}>
-            Don't have an account ? <Link href="/signup">Sign UP</Link>
-          </Typography>
+                   </Button>
         </form>
+
+        <Button
+          variant="outlined"
+          color="secondary"
+          fullWidth
+          sx={{
+            mt: 3,
+            py: 1.6,
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            borderWidth: 2,
+            "&:hover": {
+              borderWidth: 2,
+              backgroundColor: "rgba(118,75,162,0.1)",
+            },
+          }}
+          onClick={handleSignUpClick}
+        >
+          Sign Up
+        </Button>
       </Paper>
     </Box>
   );

@@ -46,9 +46,15 @@ const Signup = () => {
       setMessageType("error");
       return;
     }
+      // Check if user already exists (by email)
+    const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+    if (existingUsers.find((user) => user.email === email)) {
+      setMessage("An account with this email already exists.");
+      setMessageType("error");
+      return;
+    }
 
     setIsSubmitting(true);
-
     try {
       const response = await axios.post(
         "http://localhost:8000/api/auth/signup",

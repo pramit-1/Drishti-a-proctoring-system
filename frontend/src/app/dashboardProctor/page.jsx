@@ -90,7 +90,7 @@ const DashboardProctor = () => {
               variant="contained"
               color="primary"
               sx={{ ...buttonStyles, "&:focus-visible": { outlineColor: "#3f51b5" } }}
-              onClick={() => handleNavigate("/manage-exam")}
+              onClick={() => handleNavigate("/ExamManagement")}
             >
               🗂 Manage Exams
             </Button>
