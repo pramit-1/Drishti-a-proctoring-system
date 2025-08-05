@@ -11,7 +11,6 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
-
   Alert,
   Link,
 } from "@mui/material";
@@ -140,12 +139,12 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-           {errorMessage && (
+          {message && (
             <Alert severity="error" sx={{ mt: 2 }}>
-              {errorMessage}
+              {message}
             </Alert>
           )}
-          
+
           <Button
             type="submit"
             variant="contained"
@@ -169,7 +168,7 @@ const Login = () => {
             }}
           >
             Login
-                   </Button>
+          </Button>
         </form>
 
         <Button
@@ -187,7 +186,7 @@ const Login = () => {
               backgroundColor: "rgba(118,75,162,0.1)",
             },
           }}
-          onClick={handleSignUpClick}
+          onClick={() => router.push("/signup")}
         >
           Sign Up
         </Button>

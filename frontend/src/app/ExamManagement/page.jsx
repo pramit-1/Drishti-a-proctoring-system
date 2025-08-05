@@ -21,6 +21,10 @@ import {
   Divider,
 } from "@mui/material";
 
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import InfoIcon from "@mui/icons-material/Info";
+
 const generateExamCode = (length = 6) => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";
@@ -31,9 +35,11 @@ const generateExamCode = (length = 6) => {
 };
 
 const ExamManagement = () => {
-  const [examTitle, setExamTitle] = useState("");
-  const [subject, setSubject] = useState("");
-  const [duration, setDuration] = useState("");
+  const [examTitle, setExamTitle] = useState("Hello World");
+  const [subject, setSubject] = useState("subject");
+  const [duration, setDuration] = useState("25");
+  const [date, setDate] = useState("2025-10-10");
+  const [status, setStatus] = useState("upcoming");
 
   const [qText, setQText] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
@@ -128,10 +134,7 @@ const ExamManagement = () => {
 
   const canSubmitExam = () => {
     return (
-      examTitle.trim() &&
-      subject.trim() &&
-      duration > 0 &&
-      questions.length > 0
+      examTitle.trim() && subject.trim() && duration > 0 && questions.length > 0
     );
   };
 
@@ -158,9 +161,6 @@ const ExamManagement = () => {
     setLastCreatedCode(examCode);
 
     // Clear current form
-    setExamTitle("");
-    setSubject("");
-    setDuration("");
     setQuestions([]);
     resetQuestionForm();
   };
@@ -176,9 +176,7 @@ const ExamManagement = () => {
 
   const handleEndExam = (id) => {
     setExamsList((prev) =>
-      prev.map((exam) =>
-        exam.id === id ? { ...exam, status: "ended" } : exam
-      )
+      prev.map((exam) => (exam.id === id ? { ...exam, status: "ended" } : exam))
     );
   };
 
@@ -186,25 +184,11 @@ const ExamManagement = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        // background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* AppBar */}
-      <AppBar position="static" elevation={6} sx={{ bgcolor: "#564aa3" }}>
-        <Toolbar>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            DRISTHI Proctoring Dashboard
-          </Typography>
-          <Typography
-            sx={{ ml: 2, fontWeight: 500, fontStyle: "italic" }}
-          >
-            Role: Proctor
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
       <Container
         maxWidth="md"
         sx={{
@@ -216,7 +200,7 @@ const ExamManagement = () => {
           gap: 5,
         }}
       >
-        <Paper
+        {/* <Paper
           elevation={12}
           sx={{
             p: { xs: 3, sm: 5 },
@@ -226,206 +210,225 @@ const ExamManagement = () => {
             boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
             width: "100%",
           }}
+        > */}
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          mb={4}
+          textAlign="center"
+          color="primary"
         >
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            mb={4}
-            textAlign="center"
-            color="primary"
-          >
-            Create / Manage Exam
+          {examTitle}
+        </Typography>
+
+        {/* Exam Details */}
+        <Box mb={5}>
+          <Typography variant="h5" color="text.secondary" gutterBottom>
+            {subject}
           </Typography>
-
-          {/* Exam Details */}
-          <Box mb={5}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Exam Title"
-                  value={examTitle}
-                  fullWidth
-                  onChange={(e) => setExamTitle(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Subject"
-                  value={subject}
-                  fullWidth
-                  onChange={(e) => setSubject(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Duration (minutes)"
-                  type="number"
-                  value={duration}
-                  fullWidth
-                  onChange={(e) => setDuration(e.target.value)}
-                  inputProps={{ min: 1 }}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-
-          {/* Add/Edit Question Section */}
-          <Paper
-            elevation={6}
-            sx={{ p: 3, mb: 5, borderRadius: 3, backgroundColor: "#f9f9f9" }}
+          <Grid
+            container
+            spacing={3}
+            justifyContent="space-between"
+            alignItems="center"
+            mt={2}
           >
-            <Typography variant="h6" fontWeight="bold" mb={2}>
-              {editIndex !== null ? "Edit Question" : "Add New Question"}
-            </Typography>
-            <TextField
-              label="Question Text"
-              value={qText}
-              onChange={(e) => setQText(e.target.value)}
-              fullWidth
-              multiline
-              rows={2}
-              margin="normal"
-            />
-            <Grid container spacing={2} mb={2}>
-              {options.map((opt, idx) => (
-                <Grid item xs={12} sm={6} key={idx}>
-                  <TextField
-                    label={`Option ${idx + 1}`}
-                    value={opt}
-                    onChange={(e) => {
-                      const newOptions = [...options];
-                      newOptions[idx] = e.target.value;
-                      setOptions(newOptions);
-                    }}
-                    fullWidth
-                  />
-                </Grid>
-              ))}
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <CalendarMonthIcon color="action" />
+                <Typography variant="h6" color="text.primary">
+                  {date}
+                </Typography>
+              </Box>
             </Grid>
-
-            <FormControl component="fieldset" sx={{ mb: 2 }}>
-              <FormLabel component="legend" sx={{ fontWeight: "600" }}>
-                Select the Correct Option
-              </FormLabel>
-              <RadioGroup
-                row
-                value={correctOption}
-                onChange={(e) => setCorrectOption(e.target.value)}
-              >
-                {options.map((opt, idx) => (
-                  <FormControlLabel
-                    key={idx}
-                    value={opt}
-                    control={<Radio color="primary" />}
-                    label={`Option ${idx + 1}`}
-                    disabled={!opt.trim()}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={addOrUpdateQuestion}
-                sx={buttonStyles}
-                disabled={!validateQuestion()}
-              >
-                {editIndex !== null ? "Update Question" : "Add Question"}
-              </Button>
-              {editIndex !== null && (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={resetQuestionForm}
-                  sx={{ ...buttonStyles, backgroundColor: "transparent" }}
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <AccessTimeIcon color="action" />
+                <Typography variant="h6" color="text.primary">
+                  {duration} mins
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <InfoIcon
+                  color={
+                    status === ""
+                      ? "warning"
+                      : status === "started"
+                      ? "success"
+                      : "error"
+                  }
+                />
+                <Typography
+                  variant="h6"
+                  color="text.primary"
+                  textTransform="capitalize"
                 >
-                  Cancel Edit
-                </Button>
-              )}
-            </Box>
-          </Paper>
+                  {status}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
 
-          {/* Questions List */}
-          <Box sx={{ maxHeight: 300, overflowY: "auto", mb: 4 }}>
-            {questions.length === 0 ? (
-              <Typography
-                variant="body1"
-                textAlign="center"
-                color="text.secondary"
-              >
-                No questions added yet.
-              </Typography>
-            ) : (
-              questions.map((q, idx) => (
-                <Card
+        {/* Add/Edit Question Section */}
+        <Paper
+          elevation={6}
+          sx={{ p: 3, mb: 5, borderRadius: 3, backgroundColor: "#f9f9f9" }}
+        >
+          <Typography variant="h6" fontWeight="bold" mb={2}>
+            {editIndex !== null ? "Edit Question" : "Add New Question"}
+          </Typography>
+          <TextField
+            label="Question Text"
+            value={qText}
+            onChange={(e) => setQText(e.target.value)}
+            fullWidth
+            multiline
+            rows={2}
+            margin="normal"
+          />
+          <Grid container spacing={2} mb={2}>
+            {options.map((opt, idx) => (
+              <Grid item xs={12} sm={6} key={idx}>
+                <TextField
+                  label={`Option ${idx + 1}`}
+                  value={opt}
+                  onChange={(e) => {
+                    const newOptions = [...options];
+                    newOptions[idx] = e.target.value;
+                    setOptions(newOptions);
+                  }}
+                  fullWidth
+                />
+              </Grid>
+            ))}
+          </Grid>
+
+          <FormControl component="fieldset" sx={{ mb: 2 }}>
+            <FormLabel component="legend" sx={{ fontWeight: "600" }}>
+              Select the Correct Option
+            </FormLabel>
+            <RadioGroup
+              row
+              value={correctOption}
+              onChange={(e) => setCorrectOption(e.target.value)}
+            >
+              {options.map((opt, idx) => (
+                <FormControlLabel
                   key={idx}
-                  variant="outlined"
-                  sx={{ mb: 2, backgroundColor: "white" }}
-                >
-                  <CardContent>
-                    <Typography fontWeight="bold">
-                      {idx + 1}. {q.text}
-                    </Typography>
-                    <Box component="ul" sx={{ pl: 3, mb: 1 }}>
-                      {q.options.map((opt, i) => (
-                        <li
-                          key={i}
-                          style={{
-                            fontWeight:
-                              opt === q.correctOption ? "bold" : "normal",
-                            color: opt === q.correctOption ? "green" : "inherit",
-                          }}
-                        >
-                          {opt}
-                          {opt === q.correctOption && " (Correct)"}
-                        </li>
-                      ))}
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        gap: 1,
-                      }}
-                    >
-                      <Button
-                        variant="text"
-                        color="primary"
-                        onClick={() => handleEditQuestion(idx)}
-                        sx={{ textTransform: "none", minWidth: 0 }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="text"
-                        color="error"
-                        onClick={() => handleDeleteQuestion(idx)}
-                        sx={{ textTransform: "none", minWidth: 0 }}
-                      >
-                        Delete
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </Box>
+                  value={opt}
+                  control={<Radio color="primary" />}
+                  label={`Option ${idx + 1}`}
+                  disabled={!opt.trim()}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
 
-          {/* Create Exam Button */}
-          <Box textAlign="center" mb={4}>
+          <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="contained"
-              color="success"
-              disabled={!canSubmitExam()}
-              onClick={handleSubmitExam}
-              sx={{ ...buttonStyles, minWidth: 150 }}
+              color="primary"
+              onClick={addOrUpdateQuestion}
+              sx={buttonStyles}
+              disabled={!validateQuestion()}
             >
-              Create Exam
+              {editIndex !== null ? "Update Question" : "Add Question"}
             </Button>
+            {editIndex !== null && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={resetQuestionForm}
+                sx={{ ...buttonStyles, backgroundColor: "transparent" }}
+              >
+                Cancel Edit
+              </Button>
+            )}
           </Box>
         </Paper>
+
+        {/* Questions List */}
+        <Box sx={{ maxHeight: 300, overflowY: "auto", mb: 4 }}>
+          {questions.length === 0 ? (
+            <Typography
+              variant="body1"
+              textAlign="center"
+              color="text.secondary"
+            >
+              No questions added yet.
+            </Typography>
+          ) : (
+            questions.map((q, idx) => (
+              <Card
+                key={idx}
+                variant="outlined"
+                sx={{ mb: 2, backgroundColor: "white" }}
+              >
+                <CardContent>
+                  <Typography fontWeight="bold">
+                    {idx + 1}. {q.text}
+                  </Typography>
+                  <Box component="ul" sx={{ pl: 3, mb: 1 }}>
+                    {q.options.map((opt, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          fontWeight:
+                            opt === q.correctOption ? "bold" : "normal",
+                          color: opt === q.correctOption ? "green" : "inherit",
+                        }}
+                      >
+                        {opt}
+                        {opt === q.correctOption && " (Correct)"}
+                      </li>
+                    ))}
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 1,
+                    }}
+                  >
+                    <Button
+                      variant="text"
+                      color="primary"
+                      onClick={() => handleEditQuestion(idx)}
+                      sx={{ textTransform: "none", minWidth: 0 }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="text"
+                      color="error"
+                      onClick={() => handleDeleteQuestion(idx)}
+                      sx={{ textTransform: "none", minWidth: 0 }}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </Box>
+
+        {/* Create Exam Button */}
+        <Box textAlign="center" mb={4}>
+          <Button
+            variant="contained"
+            color="success"
+            disabled={!canSubmitExam()}
+            onClick={handleSubmitExam}
+            sx={{ ...buttonStyles, minWidth: 150 }}
+          >
+            Create Exam
+          </Button>
+        </Box>
+        {/* </Paper> */}
 
         {/* Recently generated access code */}
         {lastCreatedCode && (
