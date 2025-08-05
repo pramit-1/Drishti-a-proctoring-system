@@ -26,7 +26,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
 import axios from "axios";
-import AddQuestion from "@/components/addQuestion";
+import AddUpdateQuestion from "@/components/addQuestion";
 
 const ExamManagement = () => {
   const [examTitle, setExamTitle] = useState("");
@@ -35,6 +35,8 @@ const ExamManagement = () => {
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [questions, setQuestions] = useState({});
 
   const fetchExamData = async () => {
     try {
@@ -55,8 +57,25 @@ const ExamManagement = () => {
       setStatus(exam.status);
     } catch (err) {
       console.error("Failed to fetch exam:", err);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchExamQuestions = async () => {
+    try {
+      const access_token = localStorage.getItem("access_token");
+      const res = await axios.get(
+        `http:localhost:8000/api/exam/questions/view-proctor/${exam_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      setQuestions(res.data);
+      console.log(questions);
+    } catch (err) {
+      console.error("Failed to fetch exam questions:", err);
     }
   };
 
@@ -64,7 +83,8 @@ const ExamManagement = () => {
   const exam_id = params?.examID;
   useEffect(() => {
     fetchExamData();
-  }, []);
+    fetchExamQuestions();
+  }, [loading]);
 
   return (
     <>
@@ -134,7 +154,8 @@ const ExamManagement = () => {
         </Box>
       </Box>
 
-      <AddQuestion />
+      <AddUpdateQuestion reload={setLoading} examID={exam_id} />
+      <Box></Box>
     </>
   );
 };

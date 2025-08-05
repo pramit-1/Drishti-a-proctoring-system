@@ -9,10 +9,10 @@ questions_router = APIRouter(prefix="/questions")
 class QuestionData(BaseModel):
     exam_id:int
     question:str
-    options1:str
-    options2:str
-    options3:str
-    options4:str
+    option1:str
+    option2:str
+    option3:str
+    option4:str
     correct_option:str
 
 @questions_router.post("/update")
@@ -22,7 +22,7 @@ async def create_exam_questions(payload:QuestionData, user=Depends(get_current_u
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only proctors can create exams"
         )
-    all_exams = await db.fetchrow(f"SELECT exam_id FROM exams WHERE proctor_id = {user["user_id"]}")
+    all_exams = await db.fetch("SELECT exam_id FROM exams WHERE proctor_id = $1",user["user_id"])
     all_exam_ids = [record["exam_id"] for record in all_exams]
     if payload.exam_id not in all_exam_ids:
         raise HTTPException(
@@ -44,9 +44,9 @@ async def create_exam_questions(payload:QuestionData, user=Depends(get_current_u
         payload.exam_id,
         payload.question,
         payload.option1,
-        payload.options2,
-        payload.options3,
-        payload.options4,
+        payload.option2,
+        payload.option3,
+        payload.option4,
         payload.correct_option
 
         )
@@ -57,8 +57,8 @@ async def create_exam_questions(payload:QuestionData, user=Depends(get_current_u
             detail="Database error during question creation"
         )
 
-@questions_router.get("/view-all-proctor")
-async def get_all_questions(exam_id:int = Query(...), user = Depends(get_current_user)):
+@questions_router.get("/view-proctor/{exam_id}")
+async def get_all_questions(exam_id:int, user = Depends(get_current_user)):
     if user["role"] != "proctor":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -68,7 +68,7 @@ async def get_all_questions(exam_id:int = Query(...), user = Depends(get_current
     exam = await db.fetchrow("SELECT * FROM exams WHERE exam_id = $1 AND proctor_id = $2", exam_id, user["user_id"])
     if not exam:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Exam not found or not owned by this proctor"
         )
 

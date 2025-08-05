@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useParams } from "next/navigation";
 import {
   Paper,
   Typography,
@@ -12,9 +13,13 @@ import {
   Button,
   FormControlLabel,
   Radio,
+  Alert,
 } from "@mui/material";
+import axios from "axios";
 
-const AddQuestion = () => {
+// const exam_id =
+
+const AddUpdateQuestion = ({ reload, examID }) => {
   const buttonStyles = {
     px: { xs: 3, sm: 5 },
     py: { xs: 1.5, sm: 2 },
@@ -38,6 +43,39 @@ const AddQuestion = () => {
   const [correctOption, setCorrectOption] = useState("");
   const [editIndex, setEditIndex] = useState(null);
 
+  const addQuestions = async () => {
+    try {
+      const access_token = localStorage.getItem("access_token");
+
+      const res = await axios.post(
+        "http://localhost:8000/api/exam/questions/update",
+        {
+          exam_id: parseInt(examID), // e.g. from URL param or local state
+          question: qText.trim(), // main question text
+          option1: options[0], // A
+          option2: options[1], // B
+          option3: options[2], // C
+          option4: options[3], // D
+          correct_option: correctOption, // must match one of the above
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      console.log("Question added:", res.data);
+      // Optionally, show success toast or clear form
+    } catch (err) {
+      console.error(
+        "Failed to add question:",
+        err?.response?.data || err.message
+      );
+      // Optionally show user-facing error
+    } finally {
+      reload(true);
+    }
+  };
   const resetQuestionForm = () => {
     setQText("");
     setOptions(["", "", "", ""]);
@@ -54,20 +92,15 @@ const AddQuestion = () => {
 
   const addOrUpdateQuestion = () => {
     if (!validateQuestion()) {
-      alert(
-        "Please fill out question text, all 4 options, and select the correct option."
-      );
+      <Alert>
+        "Please fill out question text, all 4 options, and select the correct
+        option."
+      </Alert>;
       return;
     }
-    const questionData = { text: qText.trim(), options, correctOption };
-    if (editIndex !== null) {
-      const newQuestions = [...questions];
-      newQuestions[editIndex] = questionData;
-      setQuestions(newQuestions);
-    } else {
-      setQuestions([...questions, questionData]);
-    }
-    resetQuestionForm();
+
+    addQuestions();
+    // resetQuestionForm();
   };
 
   return (
@@ -152,4 +185,4 @@ const AddQuestion = () => {
   );
 };
 
-export default AddQuestion;
+export default AddUpdateQuestion;
