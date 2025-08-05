@@ -11,49 +11,47 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+
   Alert,
+  Link,
 } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/authContext";
 
 const Login = () => {
   const [role, setRole] = useState("attendee");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleSubmit = (e) => {
+  const [message, setMessage] = useState("");
+  const router = useRouter();
+  const { setAuth } = useAuth();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/signin",
+        {
+          email,
+          password,
+          role,
+        }
+      );
+      console.log(response);
+      const { access_token, token_type } = response.data;
 
-    // Fetch saved users from localStorage
-    const savedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-    // Check if user exists with matching email, password and role
-    const foundUser = savedUsers.find(
-      (user) =>
-        user.email === email &&
-        user.password === password &&
-        user.role === role
-    );
-
-    if (!foundUser) {
-      setErrorMessage("Invalid credentials or user not registered.");
-      return;
+      // Store the token and role
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("userRole", role);
+      setAuth({ token: access_token, role: role });
+      router.push("/");
+    } catch (error) {
+      const message =
+        error.response?.data?.detail || "Login failed. Try again.";
+      // alert(message);
+      // console.error("Login error:", message);
+      setMessage(message);
     }
-
-    // Successful login: Save role (and email if needed) and redirect accordingly
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("userEmail", email);
-
-    // Redirect to role-specific dashboard
-    if (role === "proctor") {
-      window.location.href = "/dashboardProctor";
-    } else {
-      window.location.href = "/dashboardAttendee";
-    }
-  };
-
-  const handleSignUpClick = () => {
-    // Navigate to your sign up page
-    window.location.href = "/signup"; // Change to your actual signup route
   };
 
   return (
@@ -90,8 +88,8 @@ const Login = () => {
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ mb: 4, whiteSpace: 'pre-line' }}
->
+          sx={{ mb: 4, whiteSpace: "pre-line" }}
+        >
           {`Your smart proctoring and exam management solution.
             Log in to access your dashboard and manage exams.`}
         </Typography>

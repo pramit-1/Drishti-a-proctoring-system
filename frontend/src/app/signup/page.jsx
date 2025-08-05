@@ -16,9 +16,11 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
-    const [role, setRole] = useState("attendee"); 
+  const [role, setRole] = useState("attendee");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,8 +28,9 @@ const Signup = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState(""); // 'error' or 'success'
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setMessage("");
     setMessageType("");
@@ -52,25 +55,27 @@ const Signup = () => {
     }
 
     setIsSubmitting(true);
-
-    // Simulate async signup API call
-    setTimeout(() => {
-       // Save new user to localStorage
-      const newUser = { name, email, password, role };
-      localStorage.setItem(
-        "users",
-        JSON.stringify([...existingUsers, newUser])
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/signup",
+        {
+          name,
+          email,
+          password,
+          role, // If you are using a role selector (like "proctor" or "attendee")
+        }
       );
-      
-      setIsSubmitting(false);
-      setMessage("Signup successful! You can now log in.");
-      setMessageType("success");
-      // Optionally reset fields:
-      setName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-    }, 1500);
+
+      if (response.status === 201 || response.status === 200) {
+        setMessage("Signup successful. You can now log in.");
+        setMessageType("success");
+
+        // Optional: redirect or clear form
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
+      }
+    } catch (error) {}
   };
 
   return (
@@ -96,8 +101,22 @@ const Signup = () => {
             textAlign: "center",
           }}
         >
-          <Avatar sx={{ mx: "auto", mb: 2, bgcolor: "primary.main", width: 64, height: 64 }} />
-          <Typography component="h1" variant="h4" mb={2} fontWeight="bold" color="primary">
+          <Avatar
+            sx={{
+              mx: "auto",
+              mb: 2,
+              bgcolor: "primary.main",
+              width: 64,
+              height: 64,
+            }}
+          />
+          <Typography
+            component="h1"
+            variant="h4"
+            mb={2}
+            fontWeight="bold"
+            color="primary"
+          >
             Create Account
           </Typography>
           <Typography variant="body1" color="text.secondary" mb={3}>
@@ -145,7 +164,6 @@ const Signup = () => {
               />
             </Box>
 
-
             <Box mb={3}>
               <TextField
                 label="Confirm Password"
@@ -186,7 +204,7 @@ const Signup = () => {
                 />
               </RadioGroup>
             </FormControl>
-            
+
             <Button
               variant="contained"
               color="primary"
@@ -215,7 +233,12 @@ const Signup = () => {
 
           <Typography mt={3} variant="body2" color="text.secondary">
             Already have an account?{" "}
-            <Link href="/login" underline="hover" color="primary" sx={{ fontWeight: "medium" }}>
+            <Link
+              href="/login"
+              underline="hover"
+              color="primary"
+              sx={{ fontWeight: "medium" }}
+            >
               Log In
             </Link>
           </Typography>
@@ -223,7 +246,12 @@ const Signup = () => {
           {message && (
             <Alert
               severity={messageType}
-              sx={{ mt: 3, maxWidth: "360px", mx: "auto", fontWeight: "medium" }}
+              sx={{
+                mt: 3,
+                maxWidth: "360px",
+                mx: "auto",
+                fontWeight: "medium",
+              }}
               role="alert"
             >
               {message}
