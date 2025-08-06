@@ -36,6 +36,7 @@ const ExamManagement = () => {
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editIndex, setEditIndex] = useState(null);
 
   const params = useParams();
   const exam_id = params?.examID;
@@ -88,7 +89,7 @@ const ExamManagement = () => {
       fetchExamData();
       fetchExamQuestions();
     }
-  }, [exam_id]);
+  }, [exam_id, loading]);
 
   return (
     <>
@@ -158,7 +159,11 @@ const ExamManagement = () => {
         </Box>
       </Box>
 
-      <AddUpdateQuestion reload={setLoading} examID={exam_id} />
+      <AddUpdateQuestion
+        reload={{ value: reload, load: setLoading }}
+        examID={exam_id}
+        editIndex={{ value: editIndex, load: setEditIndex }}
+      />
       {/* {console.log(questions.questions.length)} */}
       {Array.isArray(questions.questions) &&
       questions.questions.length === 0 ? (

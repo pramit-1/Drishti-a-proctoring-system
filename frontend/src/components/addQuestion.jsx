@@ -19,7 +19,7 @@ import axios from "axios";
 
 // const exam_id =
 
-const AddUpdateQuestion = ({ reload, examID }) => {
+const AddUpdateQuestion = ({ reload, examID, editIndex }) => {
   const buttonStyles = {
     px: { xs: 3, sm: 5 },
     py: { xs: 1.5, sm: 2 },
@@ -41,7 +41,6 @@ const AddUpdateQuestion = ({ reload, examID }) => {
   const [qText, setQText] = useState("");
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctOption, setCorrectOption] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
 
   const addQuestions = async () => {
     try {
@@ -73,14 +72,14 @@ const AddUpdateQuestion = ({ reload, examID }) => {
       );
       // Optionally show user-facing error
     } finally {
-      reload(true);
+      reload.load(!reload.value);
     }
   };
   const resetQuestionForm = () => {
     setQText("");
     setOptions(["", "", "", ""]);
     setCorrectOption("");
-    setEditIndex(null);
+    editIndex.load(null);
   };
 
   const validateQuestion = () => {
@@ -99,7 +98,11 @@ const AddUpdateQuestion = ({ reload, examID }) => {
       return;
     }
 
-    addQuestions();
+    if (editIndex.value === null) {
+      addQuestions();
+    } else {
+    }
+
     resetQuestionForm();
   };
 
