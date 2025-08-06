@@ -100,7 +100,7 @@ const AddUpdateQuestion = ({ reload, examID }) => {
     }
 
     addQuestions();
-    // resetQuestionForm();
+    resetQuestionForm();
   };
 
   return (
@@ -121,7 +121,7 @@ const AddUpdateQuestion = ({ reload, examID }) => {
           rows={1}
           margin="normal"
         />
-        <Grid container spacing={2} mb={1}>
+        <Grid container spacing={2} my={1}>
           {options.map((opt, idx) => (
             <Grid item xs={12} sm={6} key={idx}>
               <TextField

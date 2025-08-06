@@ -4,26 +4,22 @@ import { Card, CardContent, Typography, Box, Button } from "@mui/material";
 const ViewQuestion = ({ question, qidx, onDelete, onEdit }) => {
   return (
     <>
-      <Card
-        key={idx}
-        variant="outlined"
-        sx={{ mb: 2, backgroundColor: "white" }}
-      >
+      <Card variant="outlined" sx={{ mb: 2, backgroundColor: "white" }}>
         <CardContent>
           <Typography fontWeight="bold">
-            {idx + 1}. {q.text}
+            {qidx}. {question.question}
           </Typography>
           <Box component="ul" sx={{ pl: 3, mb: 1 }}>
-            {q.options.map((opt, i) => (
+            {question.options.map((opt, i) => (
               <li
                 key={i}
                 style={{
-                  fontWeight: opt === q.correctOption ? "bold" : "normal",
-                  color: opt === q.correctOption ? "green" : "inherit",
+                  fontWeight: opt === question.correct_ans ? "bold" : "normal",
+                  color: opt === question.correct_ans ? "green" : "inherit",
                 }}
               >
                 {opt}
-                {opt === q.correctOption && " (Correct)"}
+                {opt === question.correct_ans && " (Correct)"}
               </li>
             ))}
           </Box>
@@ -37,7 +33,7 @@ const ViewQuestion = ({ question, qidx, onDelete, onEdit }) => {
             <Button
               variant="text"
               color="primary"
-              onClick={() => onEdit(idx)}
+              onClick={() => onEdit(qidx)}
               sx={{ textTransform: "none", minWidth: 0 }}
             >
               Edit
@@ -45,7 +41,7 @@ const ViewQuestion = ({ question, qidx, onDelete, onEdit }) => {
             <Button
               variant="text"
               color="error"
-              onClick={() => onDelete(idx)}
+              onClick={() => onDelete(qidx)}
               sx={{ textTransform: "none", minWidth: 0 }}
             >
               Delete

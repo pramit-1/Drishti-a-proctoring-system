@@ -27,6 +27,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InfoIcon from "@mui/icons-material/Info";
 import axios from "axios";
 import AddUpdateQuestion from "@/components/addQuestion";
+import ViewQuestion from "@/components/viewQuestion";
 
 const ExamManagement = () => {
   const [examTitle, setExamTitle] = useState("");
@@ -36,7 +37,10 @@ const ExamManagement = () => {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const [questions, setQuestions] = useState({});
+  const params = useParams();
+  const exam_id = params?.examID;
+
+  const [questions, setQuestions] = useState({ questions: [] });
 
   const fetchExamData = async () => {
     try {
@@ -64,7 +68,7 @@ const ExamManagement = () => {
     try {
       const access_token = localStorage.getItem("access_token");
       const res = await axios.get(
-        `http:localhost:8000/api/exam/questions/view-proctor/${exam_id}`,
+        `http://localhost:8000/api/exam/questions/view-proctor/${exam_id}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -73,18 +77,18 @@ const ExamManagement = () => {
       );
 
       setQuestions(res.data);
-      console.log(questions);
+      console.log(res.data);
     } catch (err) {
       console.error("Failed to fetch exam questions:", err);
     }
   };
 
-  const params = useParams();
-  const exam_id = params?.examID;
   useEffect(() => {
-    fetchExamData();
-    fetchExamQuestions();
-  }, [loading]);
+    if (exam_id) {
+      fetchExamData();
+      fetchExamQuestions();
+    }
+  }, [exam_id]);
 
   return (
     <>
@@ -134,7 +138,7 @@ const ExamManagement = () => {
               <Box display="flex" alignItems="center" gap={1}>
                 <InfoIcon
                   color={
-                    status === ""
+                    status === "Upcoming"
                       ? "warning"
                       : status === "started"
                       ? "success"
@@ -155,7 +159,25 @@ const ExamManagement = () => {
       </Box>
 
       <AddUpdateQuestion reload={setLoading} examID={exam_id} />
-      <Box></Box>
+      {/* {console.log(questions.questions.length)} */}
+      {Array.isArray(questions.questions) &&
+      questions.questions.length === 0 ? (
+        <Typography variant="body1" textAlign="center" color="text.secondary">
+          No questions added yet.
+        </Typography>
+      ) : (
+        questions.questions.map((q) => (
+          <ViewQuestion
+            key={q.question_id}
+            qidx={q.question_id}
+            question={{
+              question: q.question,
+              options: [q.optiona, q.optionb, q.optionc, q.optiond],
+              correct_ans: q.correct_ans,
+            }}
+          />
+        ))
+      )}
     </>
   );
 };

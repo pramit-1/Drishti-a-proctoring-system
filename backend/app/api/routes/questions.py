@@ -30,7 +30,7 @@ async def create_exam_questions(payload:QuestionData, user=Depends(get_current_u
             detail="Invalid exam id"
             
         )
-    if payload.correct_option not in [payload.options1, payload.options2, payload.options3, payload.options4]:
+    if payload.correct_option not in [payload.option1, payload.option2, payload.option3, payload.option4]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Correct option is not among provided options"
