@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Card, CardContent, Typography } from "@mui/material";
+import { Grid, Card, CardContent, Typography, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 const stickyColors = [
@@ -33,7 +33,6 @@ const ExamCard = ({ exams, onClick }) => {
               },
               fontFamily: `"Shadows Into Light", "Comic Sans MS", cursive`,
             }}
-            onClick={() => router.push(`/exams/${exam.exam_id}`)}
           >
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -53,6 +52,30 @@ const ExamCard = ({ exams, onClick }) => {
                 <strong>Status:</strong> {exam.status || "Scheduled"}
               </Typography>
             </CardContent>
+            <Button
+              variant="text"
+              color="success"
+              onClick={() => router.push(`/exams/${exam.exam_id}`)}
+              sx={{ textTransform: "none", minWidth: 0 }}
+            >
+              View
+            </Button>
+            <Button
+              variant="text"
+              color="primary"
+              onClick={() => onEdit(qidx)}
+              sx={{ textTransform: "none", minWidth: 0 }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="text"
+              color="error"
+              onClick={() => onDelete(qidx)}
+              sx={{ textTransform: "none", minWidth: 0 }}
+            >
+              Cancel
+            </Button>
           </Card>
         </Grid>
       ))}

@@ -113,7 +113,7 @@ const AddUpdateQuestion = ({ reload, examID, editIndex }) => {
         sx={{ p: 2, mb: 5, borderRadius: 3, backgroundColor: "#f9f9f9" }}
       >
         <Typography variant="h6" fontWeight="bold">
-          {editIndex !== null ? "Edit Question" : "Add New Question"}
+          {editIndex.value !== null ? "Edit Question" : "Add New Question"}
         </Typography>
         <TextField
           label="Question Text"
@@ -170,9 +170,9 @@ const AddUpdateQuestion = ({ reload, examID, editIndex }) => {
             sx={buttonStyles}
             disabled={!validateQuestion()}
           >
-            {editIndex !== null ? "Update Question" : "Add Question"}
+            {editIndex.value !== null ? "Update Question" : "Add Question"}
           </Button>
-          {editIndex !== null && (
+          {editIndex.value !== null && (
             <Button
               variant="outlined"
               color="secondary"

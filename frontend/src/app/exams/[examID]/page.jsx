@@ -160,7 +160,7 @@ const ExamManagement = () => {
       </Box>
 
       <AddUpdateQuestion
-        reload={{ value: reload, load: setLoading }}
+        reload={{ value: loading, load: setLoading }}
         examID={exam_id}
         editIndex={{ value: editIndex, load: setEditIndex }}
       />
