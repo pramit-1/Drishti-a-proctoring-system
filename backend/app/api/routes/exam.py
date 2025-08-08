@@ -23,7 +23,7 @@ async def create_exam(payload:ExamData, user = Depends(get_current_user)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only proctors can create exams"
         )
-    
+
     try:
         await db.execute(
             """
@@ -43,25 +43,32 @@ async def create_exam(payload:ExamData, user = Depends(get_current_user)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error during exam creation",
         )
-@exam_router.get("/view-proctor")
+@exam_router.get("/view")
 async def view_exams_proctor(user = Depends(get_current_user)):
-    if user["role"] != 'proctor':
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="OnlPostgresErrory proctors can view exams"
-        )
+    if user["role"] == 'proctor':
+        try:
+            exams = await db.fetch(
+                "SELECT exam_id, title, subject, duration, date FROM exams WHERE proctor_id = $1",
+                user["user_id"]
+            )
+            return {"proctor_id": user["user_id"], "exams": exams}
+        except PostgresError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error fetching exams"
+            )
+    else:
+        try:
+            exams = await db.fetch(
+                "SELECT exam_id, title, subject, duration, date FROM exams WHERE date >= CURRENT_DATE"
+            )
+            return {"attendee_id": user["user_id"], "exams": exams}
+        except PostgresError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error fetching exams"
+            )
 
-    try:
-        exams = await db.fetch(
-            "SELECT exam_id, title, subject, duration, date FROM exams WHERE proctor_id = $1",
-            user["user_id"]
-        )
-        return {"proctor_id": user["user_id"], "exams": exams}
-    except PostgresError:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error fetching exams"
-        )
 
 @exam_router.get("/view/{exam_id}")
 async def view_single_exam(exam_id:int, user = Depends(get_current_user)):
@@ -85,7 +92,7 @@ async def view_single_exam(exam_id:int, user = Depends(get_current_user)):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Exam not found",
             )
-        
+
         return {
             "exam_id": exam["exam_id"],
             "title": exam["title"],
@@ -93,7 +100,7 @@ async def view_single_exam(exam_id:int, user = Depends(get_current_user)):
             "duration": exam["duration"],
             "date": exam["date"].isoformat(),
             "status": exam["status"]}
-        
+
     except PostgresError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -104,4 +111,3 @@ async def view_single_exam(exam_id:int, user = Depends(get_current_user)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Unknown error"
         )
-        

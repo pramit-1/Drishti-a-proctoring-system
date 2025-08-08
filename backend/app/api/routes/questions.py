@@ -3,6 +3,7 @@ from asyncpg import PostgresError
 from app.db.connection import db
 from pydantic import BaseModel
 from app.dependency.auth_dependency import get_current_user
+from datetime import date
 
 questions_router = APIRouter(prefix="/questions")
 
@@ -28,7 +29,7 @@ async def create_exam_questions(payload:QuestionData, user=Depends(get_current_u
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid exam id"
-            
+
         )
     if payload.correct_option not in [payload.option1, payload.option2, payload.option3, payload.option4]:
         raise HTTPException(
@@ -57,31 +58,61 @@ async def create_exam_questions(payload:QuestionData, user=Depends(get_current_u
             detail="Database error during question creation"
         )
 
-@questions_router.get("/view-proctor/{exam_id}")
+@questions_router.get("/view/{exam_id}")
 async def get_all_questions(exam_id:int, user = Depends(get_current_user)):
-    if user["role"] != "proctor":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only proctors can view questions"
-        )
+    if user["role"] == "proctor":
+        try:
+            exam = await db.fetchrow("SELECT * FROM exams WHERE exam_id = $1 AND proctor_id = $2", exam_id, user["user_id"])
+            if not exam:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Exam not found or not owned by this proctor"
+                          )
 
-    exam = await db.fetchrow("SELECT * FROM exams WHERE exam_id = $1 AND proctor_id = $2", exam_id, user["user_id"])
-    if not exam:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Exam not found or not owned by this proctor"
-        )
+            questions = await db.fetch(
+                """
+                SELECT question_id, question, optionA, optionB, optionC, optionD, correct_ans
+                FROM questions
+                WHERE exam_id = $1
+                """,
+                exam_id
+            )
 
-    questions = await db.fetch(
-        """
-        SELECT question_id, question, optionA, optionB, optionC, optionD, correct_ans
-        FROM questions
-        WHERE exam_id = $1
-        """,
-        exam_id
-    )
+            return {"exam_id": exam_id, "questions": questions}
+        except PostgresError:
+            raise HTTPException(
+                status_code = status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail = "Database Error"
+            )
+    else:
+        try:
+            exam = await db.fetchrow("SELECT * FROM exams WHERE exam_id = $1", exam_id)
+            if not exam:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Exam not found"
+                    )
 
-    return {"exam_id": exam_id, "questions": questions}
+            if exam["date"] != date.today():
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Exam not available"
+                    )
+            else:
+                questions = await db.fetch(
+                """
+                SELECT question_id, question, optionA, optionB, optionC, optionD
+                FROM questions
+                WHERE exam_id = $1
+                """,
+                exam_id
+            )
+            return {"exam_id": exam_id, "questions": questions}
+        except PostgresError:
+             raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database Error"
+            )
 
 @questions_router.get("/view-all-attendee")
 async def get_all_questions_attendee(session_id:int = Query(...), user=Depends(get_current_user)):
@@ -89,5 +120,5 @@ async def get_all_questions_attendee(session_id:int = Query(...), user=Depends(g
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only attendee can take exam"
-        ) 
+        )
     pass

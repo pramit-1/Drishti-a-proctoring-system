@@ -76,7 +76,10 @@ const ExamsPage = () => {
             No exams available.
           </Typography>
         ) : (
-          <ExamCard exams={exams} />
+          <ExamCard
+            exams={exams}
+            isProctor={localStorage.getItem("userRole") === "proctor"}
+          />
         )}
       </Container>
     </>

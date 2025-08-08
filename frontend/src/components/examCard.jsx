@@ -11,7 +11,7 @@ const stickyColors = [
   "#FFF0F5", // LavenderBlush
 ];
 
-const ExamCard = ({ exams, onClick }) => {
+const ExamCard = ({ exams, isProctor }) => {
   if (!exams || !Array.isArray(exams)) return null;
   const router = useRouter();
   return (
@@ -52,30 +52,43 @@ const ExamCard = ({ exams, onClick }) => {
                 <strong>Status:</strong> {exam.status || "Scheduled"}
               </Typography>
             </CardContent>
-            <Button
-              variant="text"
-              color="success"
-              onClick={() => router.push(`/exams/${exam.exam_id}`)}
-              sx={{ textTransform: "none", minWidth: 0 }}
-            >
-              View
-            </Button>
-            <Button
-              variant="text"
-              color="primary"
-              onClick={() => onEdit(qidx)}
-              sx={{ textTransform: "none", minWidth: 0 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="text"
-              color="error"
-              onClick={() => onDelete(qidx)}
-              sx={{ textTransform: "none", minWidth: 0 }}
-            >
-              Cancel
-            </Button>
+            {isProctor ? (
+              <>
+                <Button
+                  variant="text"
+                  color="success"
+                  onClick={() => router.push(`/exams/${exam.exam_id}`)}
+                  sx={{ textTransform: "none", minWidth: 0 }}
+                >
+                  view
+                </Button>
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={() => onEdit(qidx)}
+                  sx={{ textTransform: "none", minWidth: 0 }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="text"
+                  color="error"
+                  onClick={() => onDelete(qidx)}
+                  sx={{ textTransform: "none", minWidth: 0 }}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="contained" // solid style
+                color="success"
+                onClick={() => router.push(`/exams/live/${exam.exam_id}`)}
+                sx={{ textTransform: "none" }}
+              >
+                Take Exam
+              </Button>
+            )}
           </Card>
         </Grid>
       ))}
