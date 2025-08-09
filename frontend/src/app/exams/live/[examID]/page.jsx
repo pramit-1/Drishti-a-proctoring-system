@@ -12,12 +12,11 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import CircularTimer from "./circularTimer";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import dayjs from "dayjs";
-import { Router, useRouter } from "next/router";
 
 const StudentExamPage = () => {
   const [answers, setAnswers] = useState({});
@@ -92,7 +91,7 @@ const StudentExamPage = () => {
         },
       }
     );
-    Router.push("/results");
+    router.push("/results");
     // Call backend here
   };
 
