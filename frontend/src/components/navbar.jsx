@@ -128,8 +128,16 @@ const Navbar = () => {
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <img src="/logo.png" alt="Logo" style={{ width: 30, height: 30 }} />
-            <Typography variant="h6">ExamProctor</Typography>
+            {/* <img src="/logo.png" alt="Logo" style={{ width: 30, height: 30 }} /> */}
+            <Typography
+              variant="h6"
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              Drishti
+            </Typography>
           </Box>
 
           {isMobile ? (

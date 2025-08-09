@@ -74,8 +74,22 @@ const StudentExamPage = () => {
     setAnswers((prev) => ({ ...prev, [question_id]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const accessToken = localStorage.getItem("access_token");
     console.log("Submitted answers:", answers);
+    const res = await axios.post(
+      "http://localhost:8000/api/exam/result/submit-exam",
+      {
+        exam_id: parseInt(exam_id),
+        answers,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     // Call backend here
   };
 

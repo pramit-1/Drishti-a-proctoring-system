@@ -57,11 +57,11 @@ const Login = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        // background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        p: 2,
+        p: 1,
       }}
     >
       <Paper
@@ -69,7 +69,8 @@ const Login = () => {
         sx={{
           maxWidth: 600, // wider card
           width: "100%",
-          p: { xs: 4, sm: 6 },
+          px: { xs: 4, sm: 6 },
+          py: { xs: 3, sm: 3 },
           borderRadius: 4,
           bgcolor: "rgba(255,255,255,0.95)",
           boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
@@ -77,24 +78,24 @@ const Login = () => {
         }}
       >
         <Typography
-          variant="h3"
-          component="h1"
+          variant="h4"
+          //   component="h3"
           color="primary"
-          sx={{ fontWeight: "bold", mb: 1 }}
+          sx={{ fontWeight: "bold", mb: 0 }}
         >
-          Welcome to DRISTHI:Proctroing System
+          DRISTHI:Proctroing System
         </Typography>
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ mb: 4, whiteSpace: "pre-line" }}
+          sx={{ mb: 1, whiteSpace: "pre-line" }}
         >
           {`Your smart proctoring and exam management solution.
             Log in to access your dashboard and manage exams.`}
         </Typography>
 
         <form onSubmit={handleSubmit} noValidate>
-          <FormControl component="fieldset" sx={{ mb: 3, textAlign: "left" }}>
+          <FormControl component="fieldset" sx={{ mb: 1, textAlign: "left" }}>
             <FormLabel component="legend" sx={{ mb: 1, fontWeight: "600" }}>
               Login as:
             </FormLabel>
@@ -140,7 +141,7 @@ const Login = () => {
             autoComplete="current-password"
           />
           {message && (
-            <Alert severity="error" sx={{ mt: 2 }}>
+            <Alert severity="error" sx={{ mt: 1 }}>
               {message}
             </Alert>
           )}
@@ -151,8 +152,8 @@ const Login = () => {
             color="primary"
             fullWidth
             sx={{
-              mt: 3,
-              py: 1.8,
+              mt: 1,
+              py: 1.5,
               fontWeight: "bold",
               fontSize: "1.2rem",
               boxShadow: "0 4px 20px rgba(102,126,234,0.5)",
@@ -176,8 +177,8 @@ const Login = () => {
           color="secondary"
           fullWidth
           sx={{
-            mt: 3,
-            py: 1.6,
+            mt: 1,
+            py: 1.5,
             fontWeight: "bold",
             fontSize: "1.1rem",
             borderWidth: 2,
