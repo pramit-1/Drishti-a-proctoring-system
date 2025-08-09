@@ -64,6 +64,27 @@ async def evaluate_answers(
                     selected_option,
                     correct,
                 )
+            updated = await conn.execute(
+                """
+                UPDATE exam_session
+                SET score = $1
+                WHERE attendee_id = $2 AND exam_id = $3
+                """,
+                correct_answers,
+                attendee_id,
+                payload.exam_id,
+            )
+            if updated == "UPDATE 0":
+                # Optionally create a new session if none exists
+                await conn.execute(
+                    """
+                    INSERT INTO exam_session (attendee_id, exam_id, score)
+                    VALUES ($1, $2, $3)
+                    """,
+                    attendee_id,
+                    payload.exam_id,
+                    correct_answers,
+                )
 
         return {"detail": "Answers submitted successfully"}
     except Exception as e:
@@ -71,4 +92,48 @@ async def evaluate_answers(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error saving answers: {str(e)}",
+        )
+
+
+@result_router.get("/view")
+async def get_student_results(
+    user=Depends(get_current_user),
+):
+    if user["role"] != "attendee":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only attendee can view results"
+        )
+
+    attendee_id = user["user_id"]
+
+    query = """
+        SELECT
+            e.title,
+            e.subject,
+            e.date,
+            es.score
+        FROM exam_session es
+        JOIN exams e ON es.exam_id = e.exam_id
+        WHERE es.attendee_id = $1
+        ORDER BY e.date DESC
+    """
+
+    try:
+        results = await db.fetch(query, attendee_id)
+        return [
+            {
+                "exam_title": row["title"],
+                "subject": row["subject"],
+                "date": row["date"],
+                "score": row["score"],
+            }
+
+            for row in results
+        ]
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching results: {str(e)}",
         )
