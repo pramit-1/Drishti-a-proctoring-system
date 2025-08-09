@@ -55,6 +55,7 @@ const Navbar = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("role");
     setAuth({ token: null, role: null });
+    router.push("/login");
   };
 
   const navItems = isLoggedIn

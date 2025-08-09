@@ -11,9 +11,34 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-const ResultsPage = ({ results }) => {
-  // results = [{ title, subject, date, score }, ...]
+const ResultsPage = () => {
+  const [results, setResults] = useState([]);
+
+  const fetchResults = async () => {
+    const token = localStorage.getItem("access_token");
+
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/exam/result/view",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res.data);
+      setResults(res.data);
+    } catch (err) {
+      console.error("Error fetching results:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchResults();
+  }, []);
 
   return (
     <Box maxWidth="900px" mx="auto" mt={6} px={3}>
@@ -59,9 +84,9 @@ const ResultsPage = ({ results }) => {
                 </TableCell>
               </TableRow>
             ) : (
-              results.map(({ title, subject, date, score }, idx) => (
+              results.map(({ exam_title, subject, date, score }, idx) => (
                 <TableRow
-                  key={`${title}-${idx}`}
+                  key={`${exam_title}-${idx}`}
                   sx={{
                     bgcolor: idx % 2 === 0 ? "grey.50" : "common.white",
                     "&:hover": {
@@ -69,7 +94,7 @@ const ResultsPage = ({ results }) => {
                     },
                   }}
                 >
-                  <TableCell sx={{ fontWeight: 600 }}>{title}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{exam_title}</TableCell>
                   <TableCell>{subject}</TableCell>
                   <TableCell>{new Date(date).toLocaleDateString()}</TableCell>
                   <TableCell>
@@ -77,10 +102,10 @@ const ResultsPage = ({ results }) => {
                       component="span"
                       sx={{
                         fontWeight: "bold",
-                        color: score >= 50 ? "success.main" : "error.main",
+                        color: "success.main",
                       }}
                     >
-                      {score}%
+                      {score}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -92,5 +117,4 @@ const ResultsPage = ({ results }) => {
     </Box>
   );
 };
-
 export default ResultsPage;
