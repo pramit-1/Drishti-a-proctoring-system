@@ -3,6 +3,7 @@
 import asyncpg
 import os
 from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 
 load_dotenv()  # Load from .env
 
@@ -35,5 +36,18 @@ class Database:
     async def execute(self, query, *args):
         async with self.pool.acquire() as conn:
             return await conn.execute(query, *args)
+    @asynccontextmanager
+    async def transaction(self):
+        conn = await self.pool.acquire()
+        try:
+            tr = conn.transaction()
+            await tr.start()
+            yield conn
+            await tr.commit()
+        except Exception:
+            await tr.rollback()
+            raise
+        finally:
+            await self.pool.release(conn)
 
 db = Database()

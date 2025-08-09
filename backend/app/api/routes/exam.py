@@ -5,9 +5,11 @@ from pydantic import BaseModel
 from app.dependency.auth_dependency import get_current_user
 from app.api.routes.questions import questions_router
 from datetime import date
+from app.api.routes.results import result_router
 
 exam_router = APIRouter(prefix="/exam")
 exam_router.include_router(questions_router)
+exam_router.include_router(result_router)
 
 class ExamData(BaseModel):
     title:str

@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter,Depends, HTTPException, status
 from asyncpg import PostgresError
 from app.db.connection import db
 from app.utils.hash import hash_password, verify_password
 from app.utils.jwt import create_access_token
 from pydantic import BaseModel,EmailStr
+from app.dependency.auth_dependency import get_current_user
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -91,4 +92,37 @@ async def signin(payload:SigninData):
     return {
         "access_token":token,
         "token_type":"bearer"
+    }
+
+@auth_router.get("/me")
+async def get_user_info(user=Depends(get_current_user)):
+    # user dict should contain at least user_id and role
+    user_id = user.get("user_id")
+    role = user.get("role")
+
+    if not user_id or not role:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+        )
+
+    # Fetch user info based on role
+    if role == "proctor":
+        query = "SELECT proctor_id as id, name, email FROM proctor WHERE proctor_id = $1"
+    else:  # attendee
+        query = "SELECT attendee_id as id, name, email FROM attendee WHERE attendee_id = $1"
+
+    user_info = await db.fetchrow(query, user_id)
+
+    if not user_info:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    return {
+        "id": user_info["id"],
+        "name": user_info["name"],
+        "email": user_info["email"],
+        "role": role,
     }
