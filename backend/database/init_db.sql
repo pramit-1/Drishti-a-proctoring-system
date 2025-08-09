@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS exams (
     title VARCHAR(255),
     subject VARCHAR(255),
     duration INT,
-    proctor_id INT REFERENCES proctor(proctor_id) 
+    proctor_id INT REFERENCES proctor(proctor_id)
 );
 
 CREATE TABLE IF NOT EXISTS questions (

@@ -6,6 +6,7 @@ import {
   Button,
   Box,
   CircularProgress,
+  Grid,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
@@ -25,7 +26,7 @@ const ExamsPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res);
+      console.log(res.data);
       setExams(res.data.exams || []);
     } catch (error) {
       console.error("Error fetching exams:", error);
@@ -51,14 +52,17 @@ const ExamsPage = () => {
           alignItems="center"
           mb={3}
         >
-          <Typography variant="h4">My Exams</Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setOpenCreateExam(true)}
-          >
-            Create Exam
-          </Button>
+          <Typography variant="h4">All Exams</Typography>
+          {typeof window !== "undefined" &&
+            localStorage.getItem("userRole") === "proctor" && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setOpenCreateExam(true)}
+              >
+                Create Exam
+              </Button>
+            )}
         </Box>
 
         {loading ? (
@@ -70,10 +74,17 @@ const ExamsPage = () => {
             No exams available.
           </Typography>
         ) : (
-          <ExamCard
-            exams={exams}
-            isProctor={localStorage.getItem("userRole") === "proctor"}
-          />
+          <Grid container spacing={3}>
+            {exams.map((exam) => (
+              <Grid item xs={12} sm={6} md={4} key={exam.exam_id}>
+                <ExamCard
+                  exam={exam}
+                  isProctor={localStorage.getItem("userRole") === "proctor"}
+                  index={exam.exam_id}
+                />
+              </Grid>
+            ))}
+          </Grid>
         )}
       </Container>
     </>

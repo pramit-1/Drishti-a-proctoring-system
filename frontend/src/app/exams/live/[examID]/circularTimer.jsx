@@ -44,12 +44,20 @@ const CircularTimer = ({ duration = 10, onTimeUp }) => {
         alignItems="center"
         justifyContent="center"
         flexDirection="column"
+        sx={{ lineHeight: 1, textAlign: "center" }} // helps center
       >
-        <Typography variant="h6">
+        <Typography
+          variant="h6"
+          sx={{ m: 0, p: 0, lineHeight: 1 }} // no extra margin/padding
+        >
           {Math.floor(remainingSeconds / 60)}:
           {(remainingSeconds % 60).toString().padStart(2, "0")}
         </Typography>
-        <Typography variant="caption" color="textSecondary">
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          sx={{ m: 0, p: 0, lineHeight: 1 }}
+        >
           remaining
         </Typography>
       </Box>
