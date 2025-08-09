@@ -34,3 +34,29 @@ CREATE TABLE IF NOT EXISTS questions (
 ALTER TABLE exams
 ADD COLUMN date DATE NOT NULL DEFAULT CURRENT_DATE,
 ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'upcoming';
+
+CREATE TABLE exam_session (
+    session_id SERIAL PRIMARY KEY,
+    attendee_id INT REFERENCES attendee(attendee_id),
+    exam_id INT REFERENCES exams(exam_id),
+    starttime TIMESTAMP,
+    endtime TIMESTAMP,
+    score INT
+);
+
+-- Table: Answers
+CREATE TABLE IF NOT EXISTS  answers (
+    attendee_id INT REFERENCES attendee(attendee_id),
+    question_id INT REFERENCES questions(question_id),
+    selected_option VARCHAR(255),
+    correct BOOLEAN
+);
+
+-- Table: Log
+CREATE TABLE IF NOT EXISTS log (
+    log_id SERIAL PRIMARY KEY,
+    session_id INT REFERENCES exam_session(session_id),
+    timestamp TIMESTAMP,
+    event_type VARCHAR(255),
+    remarks TEXT
+);
