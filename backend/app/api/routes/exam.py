@@ -72,10 +72,10 @@ async def view_exams_proctor(user = Depends(get_current_user)):
 
 @exam_router.get("/view/{exam_id}")
 async def view_single_exam(exam_id:int, user = Depends(get_current_user)):
-    if user["role"] != 'proctor':
+    if user["role"] not in  ['proctor', 'attendee']:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="OnlPostgresErrory proctors can view exams"
+            detail="Onlu Users can view exams"
         )
     try:
         exam = await db.fetchrow(

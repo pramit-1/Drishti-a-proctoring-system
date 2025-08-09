@@ -2,9 +2,6 @@
 import { useEffect, useState } from "react";
 import {
   Container,
-  Grid,
-  Card,
-  CardContent,
   Typography,
   Button,
   Box,
@@ -23,14 +20,11 @@ const ExamsPage = () => {
   const fetchExams = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const res = await axios.get(
-        "http://localhost:8000/api/exam/view-proctor",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get("http://localhost:8000/api/exam/view", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(res);
       setExams(res.data.exams || []);
     } catch (error) {

@@ -57,7 +57,7 @@ const ExamCard = ({ exams, isProctor }) => {
                 <Button
                   variant="text"
                   color="success"
-                  onClick={() => router.push(`/exams/${exam.exam_id}`)}
+                  onClick={() => router.push(`/exams/edit/${exam.exam_id}`)}
                   sx={{ textTransform: "none", minWidth: 0 }}
                 >
                   view

@@ -69,7 +69,7 @@ const ExamManagement = () => {
     try {
       const access_token = localStorage.getItem("access_token");
       const res = await axios.get(
-        `http://localhost:8000/api/exam/questions/view-proctor/${exam_id}`,
+        `http://localhost:8000/api/exam/questions/view/${exam_id}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
