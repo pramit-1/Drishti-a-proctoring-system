@@ -17,12 +17,14 @@ import axios from "axios";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import dayjs from "dayjs";
+import { Router, useRouter } from "next/router";
 
 const StudentExamPage = () => {
   const [answers, setAnswers] = useState({});
   const [exam, setExam] = useState({});
   const [questions, setQuestions] = useState([]);
   const [isExamToday, setIsExamToday] = useState(false);
+  const router = useRouter();
 
   const params = useParams();
   const exam_id = params?.examID;
@@ -90,6 +92,7 @@ const StudentExamPage = () => {
         },
       }
     );
+    Router.push("/results");
     // Call backend here
   };
 
